@@ -135,3 +135,23 @@ Please cite the **original datasets** (MMASD and Engagnition) and this benchmark
 License: see `LICENSE`.
 
 **Contact.** Questions and suggestions are welcome in GitHub Issues.
+---
+
+## Reporting Issues
+To report an issue please use the issues page (https://github.com/omicscodeathon/autdb/issues). Please check existing issues before submitting a new one.
+
+## Contribute to the Project
+You can offer to help with the further development of this project by making pull requests on this repo. To do so, fork this repository and make the proposed changes. Once completed and tested, submit a pull request to this repo.
+
+## Team
+
+Ruslan Kurmashev, Munster Technological University, Dublin, Ireland (Developer - Writer).
+
+Adina Yessimova, City Colleges in Dublin, Dublin, Ireland (Writer).
+
+Denis Traore, Université Nazi Boni, Burkina Faso (Writer).
+
+Elizabeth Baidoo Obeng, Munster Technological University, Dublin, Ireland (Writer).
+
+Olaitan I. Awe, Ph.D., Institute for Genomic Medicine Research (IGMR), United States. (Supervisor)
+
