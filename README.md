@@ -1,3 +1,4 @@
+# AutDB
 # Privacy-First Benchmark for Video-Based ASD Screening
 
 **One-liner.** Reproducible, privacy-preserving benchmark that harmonizes two local datasets (**MMASD** and **Engagnition**) into a unified metadata table and evaluates **transportability (LODO)** and **fairness** on a shared proxy target `movement_intensity_bin`.
