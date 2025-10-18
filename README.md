@@ -1,140 +1,223 @@
-# AutDB
-# Privacy-First Benchmark for Video-Based ASD Screening
+<div align="center">
 
-**One-liner.** Reproducible, privacy-preserving benchmark that harmonizes two local datasets (**MMASD** and **Engagnition**) into a unified metadata table and evaluates **transportability (LODO)** and **fairness** on a shared proxy target `movement_intensity_bin`.
+# **AutDB — Privacy‑First Benchmark for Video‑Based ASD Screening**
 
-> ⚠️ Raw videos are **not** stored here. We use only **derived, non-identifiable** features and local file paths. Both datasets must be obtained from the original authors and stored locally.
+*A reproducible, privacy‑preserving baseline that harmonizes two datasets — **MMASD** (video‑derived skeleton/flow) and **Engagnition** (E4 wristband + annotations) — into a unified table and evaluates **transportability (LODO)** and **IID** performance on a shared proxy target.*
 
----
-
-## What’s inside
-
-- **Unified metadata** across two datasets (one row = MMASD clip or Engagnition session)
-- **Shared target** `movement_intensity_bin` (robust-z within participant, binarized at `z ≥ 0`)
-- **Setups:**  
-  - **IID:** GroupKFold within each dataset (groups = `participant_id_global`)  
-  - **LODO:** train on one dataset, test on the other
-- **Metrics:** AUROC (primary), Balanced Accuracy, F1
-- **Saved outputs:** CSV metrics in `outputs/tables/` and figures in `figs/`
+</div>
 
 ---
 
-## Repository layout
+## 🔎 Overview
 
-```
-data/
-  MMASD/                       # local-only (2D/3D skeletons, optical flow, etc.)
-  Engagnition/                 # local-only (ACC/GSR/Temp + annotations)
-  Frozen Basic Data/...        # frozen manifests / snapshots
-  Prepared data with IDglobal/
-  Prepared data with features/
-Baseline/
-  figures.ipynb                # render ROC & fairness plots from saved CSVs
-Code for preparing tables/     # harmonization & label preparation notebooks/utils
-outputs/
-  tables/                      # metrics_*.csv (IID/LODO, fairness)
-figs/                          # roc_lodo.png, fairness_deltas.png
-```
+- **Goal.** Provide a transparent, reproducible pipeline for training and evaluating portable ML models on derived, **non‑identifiable** features from MMASD and Engagnition.
+- **Key deliverables.**
+  - A **unified metadata table** (one row = MMASD clip or Engagnition session).
+  - A shared proxy target: `movement_intensity_raw → z‑score within participant → movement_intensity_bin (z ≥ 0)`.
+  - Ready‑to‑run **IID** (GroupKFold by `participant_id_global`) and **LODO** (train on one dataset, test on the other) experiments.
+  - Saved **metrics CSVs** (AUROC, Balanced Accuracy, F1) and optional figures.
+- **Privacy notice.** No raw videos are stored here. Only derived features and relative file paths. Obtain original data from the dataset owners (see `docs/datasets.md`).
 
 ---
 
-## Quick start
+## ⚡ Five‑Minute Quick Start (Windows + Python 3.10)
 
 ```bash
-# 1) Create environment (Python 3.10+)
+# 1) Environment
 py -m venv .venv
 .venv\Scripts\activate
 py -m pip install -r requirements.txt
+```
 
-# 2) Place data under ./data (see "Data placement" below)
+1) **Place data** under `./data` exactly as described in `docs/datasets.md`  
+   - `data/MMASD/…` — skeletons / optical flow / tables  
+   - `data/Engagnition/…` — E4 CSVs (`E4AccData.csv`, `E4GsrData.csv`, `E4TmpData.csv`) + questionnaires/annotations  
+2) **Build per‑dataset basics** (from repo root):
+```bash
+py "Code for preparing tables\build_mmasd_basic.py"
+py "Code for preparing tables\compute_mmasd_features.py"
+py "Code for preparing tables\build_engagnition_basic.py"
+py "Code for preparing tables\compute_eng_features.py"
+```
+3) **Merge** into a unified master table:
+```bash
+py "Code for preparing tables\merge_tables.py"
+```
+4) **Clean + add global IDs & splits**: open and run  
+   `Prepared data with IDglobal/Metadata cleaning.ipynb`.
+5) (Optional) **Feature enrichment**: see `Prepared data with features/`.
+6) **Run baselines**: go to `Baseline/` → pick a folder `Experement - *` → follow its local `README.txt` for exact commands.
 
-# 3) Build unified metadata & labels
-#    Open notebooks in "Code for preparing tables/" and run the pipeline.
-#    This produces metadata_master.* and training-ready tables.
+> Tip: Every working folder contains its own short **README.txt** with the literal commands to run.
 
-# 4) Train & evaluate (IID + LODO)
-#    Run the training notebook/script provided in the repo.
-#    Metrics will be saved to outputs/tables/metrics_{iid,lodo}.csv
+---
 
-# 5) Render figures
-#    Open Baseline/figures.ipynb to generate figs/roc_lodo.png and figs/fairness_deltas.png
+## 🗂️ Repository Structure
+
+```
+docs/
+  AutDB.pptm
+  datasets.md
+  metadata_schema.md
+  preparation.md
+  reproducibility.md
+  training.md
+```
+
+```
+frozen/
+  v1_2025-09-13/
+    README.txt
+    schema.yaml
+    schema_withGlobalID.yaml
+    metadata_ml_ready_splits.xlsx
+    metadata_ml_ready_splits_withGlobalID.xlsx
+    splits_manifest.json
+    splits_manifest_withGlobalID.json
+```
+
+```
+Code for preparing tables/
+  README.txt
+  build_mmasd_basic.py
+  compute_mmasd_features.py
+  build_engagnition_basic.py
+  compute_eng_features.py
+  merge_tables.py
+  Engagnition basic.xlsx
+  MMASD basic.xlsx
+  metadata_master.csv
+  metadata_master.xlsx
+```
+
+```
+Prepared data with IDglobal/
+  README.txt
+  Metadata cleaning.ipynb
+  metadata_master.xlsx
+  metadata_ml_ready*.xlsx
+  schema.yaml / schema.yaml.ipynb
+  splits_manifest.json
+```
+
+```
+Prepared data with features/
+  README.txt
+  *features*.xlsx
+  *merged*.xlsx
+```
+
+```
+Baseline/
+  Experement - 1 (General Baseline)/
+    README.txt
+    train_mi_baselines.py
+    outputs/
+  Experement - 2 (MMASD)/
+    README.txt
+    mmasd_dual_task.py | train_from_cleaned.py
+    outputs/
+  Experement - 3 (Engagnition)/
+    README.txt
+    train_engagnition.py
+    train_engagnition_enriched.py
+    outputs/
+  Experement - 4 (LODO)/
+    README.txt
+    build_lodo_intensity_table.py
+    train_lodo_intensity_scaled.py
+    outputs_global/
+    outputs_per_dataset/
+    outputs_train_only/
+```
+
+```
+data/                      # you create locally (see docs/datasets.md)
+  MMASD/
+  Engagnition/
 ```
 
 ---
 
-## Data placement (local)
+## 🔁 End‑to‑End Workflow (6 Steps)
 
-### MMASD (example)
-```
-data/MMASD/2D skeleton/2D_openpose_output/<activity>/<clip_id>/*.json
-# optional
-data/MMASD/ROMP/<activity>/<clip_id>/*.npz
-data/MMASD/optflow/<activity>/<clip_id>/*.npy
-```
-
-### Engagnition (example)
-```
-data/Engagnition/
-  Baseline condition/Pxx/{E4AccData.csv,E4GsrData.csv,E4TmpData.csv}
-  LPE condition/Pxx/{... + EngagementData.csv, GazeData.csv, PerformanceData.csv}
-  HPE condition/Pxx/{... + EngagementData.csv, GazeData.csv, PerformanceData.csv}
-Subjective questionnaire.xlsx
-InterventionData.xlsx
-Session Elapsed Time.xlsx
-```
-
-> The exact trees and file naming follow the dataset documentation. Only **derived** features and tabular files are referenced by the benchmark.
+1. **Harmonize IDs & rows** → one row per sample (MMASD clip or Engagnition session).  
+2. **Compute movement intensity** per dataset:  
+   - MMASD → from skeleton/optical‑flow, produce `movement_intensity_raw`.  
+   - Engagnition → from E4 ACC (SVM), produce `movement_intensity_raw`.  
+   Then: robust z‑score within participant → `movement_intensity_bin`.
+3. **Unify** into `metadata_master.*` with provenance (`path_*` columns).  
+4. **Create splits**: GroupKFold for **IID** and **LODO** tags using `participant_id_global`.  
+5. **Train & evaluate** interpretable models (e.g., Logistic Regression). Save metrics to CSV.  
+6. **Freeze** outputs and schema in `frozen/` to guarantee reproducibility.
 
 ---
 
-## Minimal field schema (high-level)
+## 🧬 Data Schema (Essentials)
 
-- Keys: `sample_id`, `participant_id_global`, `dataset`
-- Targets: `movement_intensity_raw`, `movement_intensity_z`, `movement_intensity_bin`
-- Demographics for fairness: `sex`, `age_years` (and/or `age_group`)
-- Reproducibility: `split_seed`, `split_iid`, `split_lodo`, `group_kfold`
-- Provenance: `source_file`, `path_*` to derived features (relative paths)
+- **Keys:** `sample_id`, `participant_id_global`, `dataset`, `activity/condition`  
+- **Targets:** `movement_intensity_raw`, `movement_intensity_z`, `movement_intensity_bin`  
+- **Demographics:** `sex`, `age_years` / `age_group`  
+- **Splits:** `split_seed`, `split_iid`, `split_lodo`, `group_kfold`  
+- **Provenance:** `source_file`, `path_*` to derived artifacts  
 
-A full schema with types and examples is provided in `docs/metadata_schema.md` (see below).
-
----
-
-## Reproducing our results
-
-1. **Harmonize** the datasets → produce `metadata_master.*` using the notebooks in `Code for preparing tables/`.  
-2. **Train IID** per dataset and **LODO** cross-dataset using the provided training notebook/script.  
-3. **Collect metrics** from `outputs/tables/metrics_{iid,lodo}.csv`.  
-4. **Plot** with `Baseline/figures.ipynb` → `figs/roc_lodo.png`, `figs/fairness_deltas.png`.
+See `docs/metadata_schema.md` for the authoritative, typed specification.
 
 ---
 
-## Intended use & limitations
+## 🧊 Frozen Snapshots
 
-- Datasets comprise **children with ASD only**; this is **not** an ASD-vs-TD diagnostic pipeline.  
-- `movement_intensity_bin` is a **proxy** label designed for cross-dataset comparability and privacy.  
-- We intentionally favor simple, transparent tabular models to emphasize **transportability** and **fairness**, not leaderboard SOTA.
-
----
-
-## Docs (recommended)
-
-Create a `docs/` folder and add:
-
-- `docs/datasets.md` – how to obtain and place the datasets; exact folder trees  
-- `docs/metadata_schema.md` – complete field list, types, allowed values, examples  
-- `docs/preparation.md` – step-by-step harmonization & label building (`movement_intensity_*`)  
-- `docs/training.md` – training configs, GroupKFold details, seeds, optional class/subject weights  
-- `docs/results.md` – how to read `metrics_*.csv` and reproduce the figures  
-- `docs/reproducibility.md` – versioning, frozen manifests, split manifests
+**`frozen/v1_2025-09-13/`** is an immutable snapshot (schema, manifests, ML‑ready tables, splits).  
+**Rule:** never overwrite it; future revisions go into a new versioned folder.
 
 ---
 
-## Citing & license
+## 🧪 Experiments & Outputs
 
-Please cite the **original datasets** (MMASD and Engagnition) and this benchmark if you use it in a paper or poster.  
-License: see `LICENSE`.
+- **Exp‑1 — General Baseline:** overall baselines and sanity checks.  
+- **Exp‑2 — MMASD:** intra‑dataset experiments and feature variants.  
+- **Exp‑3 — Engagnition:** same for Engagnition + feature enrichment.  
+- **Exp‑4 — LODO:** cross‑dataset transfer (train ↔ test).  
 
-**Contact.** Questions and suggestions are welcome in GitHub Issues.
+Each script writes **metrics CSVs** under its `outputs/` subfolder.
+
+---
+
+## 📖 Where to Read Detailed Instructions
+
+- `docs/datasets.md` — how to obtain & place data.  
+- `docs/preparation.md` — building basics & intensity calculation.  
+- `docs/training.md` — running IID/LODO; arguments & configs.  
+- `docs/reproducibility.md` — seeds, manifests, “frozen” rules.  
+- Local **README.txt** in each working folder (exact commands).  
+- Russian checklist: `Порядок действий которые были выполнены в процессе работы.txt`.
+
+---
+
+## ⚖️ Intended Use
+
+- **Use this if** you need a transparent, reproducible **baseline** for portability and privacy‑by‑design screening signals.  
+- **Do not use as** a clinical ASD vs TD diagnostic tool. The current setup relies on a **proxy outcome** for cross‑dataset comparability.
+
+---
+
+## 📚 Cite & License
+
+Please cite the original datasets when using this benchmark:
+
+- **MMASD** — Li *et al.* *A Multimodal Dataset for Autism Intervention Analysis* (ICMI 2023).  
+- **Engagnition** — Kim *et al.* *Engagnition: multi‑dimensional dataset for engagement recognition of children with ASD* (*Scientific Data*, 2024).
+
+Code/text license: see `LICENSE`.
+
+---
+
+## 🤝 Contributing & Support
+
+- Open an issue for bugs/questions.  
+- PRs are welcome — follow folder conventions and **do not modify `frozen/`**.  
+- For data access questions, start with `docs/datasets.md`.
+
 ---
 
 ## Reporting Issues
