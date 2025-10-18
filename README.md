@@ -183,17 +183,6 @@ Each script writes **metrics CSVs** under its `outputs/` subfolder.
 
 ---
 
-## 📖 Where to Read Detailed Instructions
-
-- `docs/datasets.md` — how to obtain & place data.  
-- `docs/preparation.md` — building basics & intensity calculation.  
-- `docs/training.md` — running IID/LODO; arguments & configs.  
-- `docs/reproducibility.md` — seeds, manifests, “frozen” rules.  
-- Local **README.txt** in each working folder (exact commands).  
-- Russian checklist: `Порядок действий которые были выполнены в процессе работы.txt`.
-
----
-
 ## ⚖️ Intended Use
 
 - **Use this if** you need a transparent, reproducible **baseline** for portability and privacy‑by‑design screening signals.  
