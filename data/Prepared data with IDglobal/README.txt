@@ -1,4 +1,4 @@
-##Prepared data with IDglobal
+*Prepared data with IDglobal*
 
 This folder contains all intermediate and final metadata tables used for downstream modeling, validation, and reproducibility of the AutDB study.
 Each file in this folder represents a specific processing stage — from raw feature merging to final machine-learning-ready datasets with global IDs and predefined splits.
