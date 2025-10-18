@@ -1,0 +1,105 @@
+dataset:
+  dtype: string
+  domain:
+  - Engagnition
+  - MMASD
+  description: Source dataset (MMASD or Engagnition)
+sample_id:
+  dtype: string
+  domain: 1431 unique values
+  description: Unique identifier for sample
+participant_id:
+  dtype: string
+  domain: 89 unique values
+  description: Participant code (Pxx)
+condition:
+  dtype: string
+  domain:
+  - Baseline
+  - HPE
+  - LPE
+  description: Experimental condition (Baseline, LPE, HPE, NA)
+unit_level:
+  dtype: string
+  domain:
+  - session
+  description: Granularity (session or block)
+modality:
+  dtype: string
+  domain:
+  - ACC
+  description: Signal modality (ACC, GSR, TMP, ENG, GAZE, PERF)
+movement_intensity_raw:
+  dtype: numeric
+  description: Median raw movement intensity (numeric)
+movement_intensity_z:
+  dtype: numeric
+  description: Robust z-score of movement intensity
+movement_intensity_bin:
+  dtype: integer
+  domain:
+  - '0'
+  - '1'
+  description: 'Binary proxy label: 1 if z>=0 else 0'
+engagement_level:
+  dtype: string
+  domain: []
+  description: Categorical engagement level (if available)
+sex:
+  dtype: string
+  domain:
+  - F
+  - M
+  description: Participant sex (M/F/unknown)
+age_years:
+  dtype: numeric
+  description: Participant age in years
+age_group:
+  dtype: string
+  domain: []
+  description: Age group (child, teen, adult, unknown)
+split_seed:
+  dtype: integer
+  domain:
+  - '42'
+  description: Random seed used for split
+split_iid:
+  dtype: string
+  domain:
+  - test
+  - train
+  - val
+  description: Split assignment (train/val/test, IID strategy)
+split_lodo:
+  dtype: string
+  domain:
+  - test
+  - train
+  - val
+  description: Split assignment (train/val/test, LODO strategy)
+block_field:
+  dtype: string
+  domain: []
+  description: Block column name (Engagnition only)
+block_id:
+  dtype: string
+  domain: []
+  description: Block identifier
+cv_fold_iid:
+  dtype: integer
+  domain:
+  - '0'
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  description: Fold index (IID stratified group split)
+cv_fold_lodo:
+  dtype: integer
+  domain:
+  - '0'
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  description: Fold index (LODO group split)
