@@ -1,8 +1,8 @@
 <div align="center">
 
-# **AutDB — Privacy‑First Benchmark for Video‑Based ASD Screening**
+# **AutDB - Privacy‑First Benchmark for Video‑Based ASD Screening**
 
-*A reproducible, privacy‑preserving baseline that harmonizes two datasets — **MMASD** (video‑derived skeleton/flow) and **Engagnition** (E4 wristband + annotations) — into a unified table and evaluates **transportability (LODO)** and **IID** performance on a shared proxy target.*
+*A reproducible, privacy‑preserving baseline that harmonizes two datasets - **MMASD** (video‑derived skeleton/flow) and **Engagnition** (E4 wristband + annotations) - into a unified table and evaluates **transportability (LODO)** and **IID** performance on a shared proxy target.*
 
 </div>
 
@@ -30,8 +30,8 @@ py -m pip install -r requirements.txt
 ```
 
 1) **Place data** under `./data` exactly as described in `docs/datasets.md`  
-   - `data/MMASD/…` — skeletons / optical flow / tables  
-   - `data/Engagnition/…` — E4 CSVs (`E4AccData.csv`, `E4GsrData.csv`, `E4TmpData.csv`) + questionnaires/annotations  
+   - `data/MMASD/…` - skeletons / optical flow / tables  
+   - `data/Engagnition/…` - E4 CSVs (`E4AccData.csv`, `E4GsrData.csv`, `E4TmpData.csv`) + questionnaires/annotations  
 2) **Build per‑dataset basics** (from repo root):
 ```bash
 py "Code for preparing tables\build_mmasd_basic.py"
@@ -174,10 +174,10 @@ See `docs/metadata_schema.md` for the authoritative, typed specification.
 
 ## 🧪 Experiments & Outputs
 
-- **Exp‑1 — General Baseline:** overall baselines and sanity checks.  
-- **Exp‑2 — MMASD:** intra‑dataset experiments and feature variants.  
-- **Exp‑3 — Engagnition:** same for Engagnition + feature enrichment.  
-- **Exp‑4 — LODO:** cross‑dataset transfer (train ↔ test).  
+- **Exp‑1 - General Baseline:** overall baselines and sanity checks.  
+- **Exp‑2 - MMASD:** intra‑dataset experiments and feature variants.  
+- **Exp‑3 - Engagnition:** same for Engagnition + feature enrichment.  
+- **Exp‑4 - LODO:** cross‑dataset transfer (train ↔ test).  
 
 Each script writes **metrics CSVs** under its `outputs/` subfolder.
 
@@ -194,8 +194,8 @@ Each script writes **metrics CSVs** under its `outputs/` subfolder.
 
 Please cite the original datasets when using this benchmark:
 
-- **MMASD** — Li *et al.* *A Multimodal Dataset for Autism Intervention Analysis* (ICMI 2023).  
-- **Engagnition** — Kim *et al.* *Engagnition: multi‑dimensional dataset for engagement recognition of children with ASD* (*Scientific Data*, 2024).
+- **MMASD** - Li *et al.* *A Multimodal Dataset for Autism Intervention Analysis* (ICMI 2023).  
+- **Engagnition** - Kim *et al.* *Engagnition: multi‑dimensional dataset for engagement recognition of children with ASD* (*Scientific Data*, 2024).
 
 Code/text license: see `LICENSE`.
 
@@ -204,7 +204,7 @@ Code/text license: see `LICENSE`.
 ## 🤝 Contributing & Support
 
 - Open an issue for bugs/questions.  
-- PRs are welcome — follow folder conventions and **do not modify `frozen/`**.  
+- PRs are welcome - follow folder conventions and **do not modify `frozen/`**.  
 - For data access questions, start with `docs/datasets.md`.
 
 ---
