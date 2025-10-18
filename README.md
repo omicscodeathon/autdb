@@ -151,7 +151,5 @@ Adina Yessimova, City Colleges in Dublin, Dublin, Ireland (Writer).
 
 Denis Traore, Université Nazi Boni, Burkina Faso (Writer).
 
-Elizabeth Baidoo Obeng, Munster Technological University, Dublin, Ireland (Writer).
-
 Olaitan I. Awe, Ph.D., Institute for Genomic Medicine Research (IGMR), United States. (Supervisor)
 
