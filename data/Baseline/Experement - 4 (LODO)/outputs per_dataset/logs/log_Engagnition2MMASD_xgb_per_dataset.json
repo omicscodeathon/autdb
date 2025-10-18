@@ -1,0 +1,21 @@
+{
+  "train_dataset": "Engagnition",
+  "test_dataset": "MMASD",
+  "model": "xgb",
+  "scaling": {
+    "scaling_mode": "per_dataset",
+    "stats": "per_dataset"
+  },
+  "best_params": {
+    "subsample": 1.0,
+    "reg_lambda": 1.0,
+    "n_estimators": 900,
+    "min_child_weight": 3,
+    "max_depth": 4,
+    "learning_rate": 0.1,
+    "colsample_bytree": 0.75
+  },
+  "thr_from_train": 0.34347620606422424,
+  "train_prevalence": 0.6052631578947368,
+  "oof_f1_at_thr": 0.7540983606557377
+}

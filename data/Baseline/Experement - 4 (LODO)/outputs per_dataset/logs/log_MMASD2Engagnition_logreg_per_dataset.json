@@ -1,0 +1,15 @@
+{
+  "train_dataset": "MMASD",
+  "test_dataset": "Engagnition",
+  "model": "logreg",
+  "scaling": {
+    "scaling_mode": "per_dataset",
+    "stats": "per_dataset"
+  },
+  "best_params": {
+    "clf__C": 0.2848035868435802
+  },
+  "thr_from_train": 0.3300203799764405,
+  "train_prevalence": 0.5058224163027657,
+  "oof_f1_at_thr": 0.7050113895216401
+}
