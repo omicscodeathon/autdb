@@ -1,120 +1,113 @@
 # Preparation Pipeline
-Preparation Pipeline — Detailed
-0) Data sources & working files
 
-MMASD: OpenPose 2D skeleton JSONs (per frame) + subject/activity metadata → MMASD_merged.xlsx.
+This document describes the **end-to-end data preparation** used by AutDB: from building basic tables and features to producing a frozen, split-ready snapshot for training.
 
-Engagnition: Empatica E4 signals (ACC/GSR/TMP) summarized per session → Engagnition_features.xlsx (and enriched variants).
+> Scope: **Python-only** pipeline; works on Windows(tested on Python 3.10).  
+> Data: original datasets are **not distributed** — see `docs/datasets.md` for local placement.
 
-Splits & IDs: metadata_ml_ready_splits.xlsx → metadata_ml_ready_splits_withGlobalID.xlsx (adds a cross-dataset participant key).
+---
 
-1) Harmonize IDs & rows (one row = one sample)
+## 0) Prerequisites
 
-Goal: a unified, sample-level view that works across datasets.
+### Environment setup
+```bash
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
 
-Row granularity
+python -m pip install -U pip
+pip install -r scripts/requirements.txt
+```
 
-MMASD: 1 row = 1 clip.
+### Expected local data layout
+See `docs/datasets.md` for the exact folder structures of **MMASD** (2D skeleton JSON) and **Engagnition** (Empatica E4 CSV + study spreadsheets).
 
-Engagnition: 1 row = 1 session.
+---
 
-Keys we standardize
+## 1) Build per‑dataset basic tables & features
 
-dataset ∈ {MMASD, Engagnition}
+> Outputs of this section live under `data/Prepared data with features/` and feed the unification stage.
 
-sample_id (clip/session ID used for merges)
+### 1.1 MMASD (2D skeleton → features)
+**Input:** OpenPose JSONs (per frame) under `data/MMASD/2D skeleton/2D_openpose_output/`.
 
-participant_id (dataset-local)
+Run from `data/Code for preparing tables/`:
+See README.txt
 
-participant_id_global (cross-dataset key; derived in add_global_id.py)
+### 1.2 Engagnition (ACC → features, + engagement)
+**Input:** Empatica E4 CSVs per participant/condition + study spreadsheets.
 
-Optional: condition (Engagnition: Baseline|LPE|HPE), activity_class_basic (MMASD), paths, etc.
+Run from `data/Code for preparing tables/`:
+See README.txt
 
-Cleaning & QC
+---
 
-Drop duplicate rows by (dataset,sample_id).
+## 2) Unify IDs & rows
 
-Ensure each row has a valid participant_id.
+Goal: a **single, sample-level view** across datasets with consistent keys for merges and group-aware CV.
 
-Keep simple, human-readable columns; avoid any PII.
+- **Row definition**  
+  - MMASD: 1 row = 1 **clip**  
+  - Engagnition: 1 row = 1 **session**
+- **Keys**  
+  `dataset ∈ {MMASD, Engagnition}`, `sample_id` (clip/session), `participant_id` (dataset-local), `participant_id_global` (cross‑dataset), plus optional `condition` (Engagnition), `activity_class_basic` (MMASD), and relative **paths** used by scripts.
+- **Cleaning & QC**  
+  De-duplicate by `(dataset, sample_id)`, ensure valid `participant_id`, keep human‑readable columns only (no PII).
 
-Outputs:
-metadata_master.* (working merge table) and a frozen version:
-data/frozen/v1_2025-09-13/{metadata_ml_ready_splits.xlsx, schema.yaml, splits_manifest.json, *withGlobalID.*}
+### 2.1 Notebooks (ID unification + cleaning)
+From `data/Prepared data with IDglobal/` run:
+```bash
+jupyter nbconvert --to notebook --execute "Metadata cleaning.ipynb"     --output "Metadata_cleaning_executed.ipynb"
+jupyter nbconvert --to notebook --execute "schema.yaml.ipynb"           --output "schema_executed.ipynb"
+```
+Key outputs:
+- `metadata_ml_ready.xlsx` — unified table for modeling
+- `schema.yaml` — column definitions and dtypes
 
-2) Compute movement intensity per sample
-2a) MMASD (skeleton / optical flow)
+### 2.2 Fixed participant-level splits
+We ship canonical splits in `splits_manifest.json` with two setups: `split_iid` and `split_lodo` (each with `train/val/test`).  
+Use these to derive split-aware tables or consume them directly at training.
 
-Input: per-frame keypoints (x,y,confidence) from OpenPose.
+---
 
-Per-frame speed series (one value per frame):
+## 3) Frozen snapshot (immutable)
 
-For each frame, choose the person with highest total confidence.
+Freeze all ingredients used in experiments under a versioned folder, e.g.:
+```
+data/frozen/v1_2025-09-13/
+  metadata_ml_ready_splits.xlsx
+  schema.yaml
+  splits_manifest.json
+  add_global_id.py
+  metadata_ml_ready_splits_withGlobalID.xlsx
+  schema_withGlobalID.yaml
+  splits_manifest_withGlobalID.json
+```
+**Rules**
+- Frozen folders are **immutable**. Any changes → create a new `vN_YYYY-MM-DD`.
+- All training scripts reference a **specific** frozen snapshot to ensure comparability.
 
-For each joint  
-<img width="401" height="44" alt="image" src="https://github.com/user-attachments/assets/07b28713-cd75-4468-8fe1-f22681af2efe" />
-rame speed = mean of <img width="52" height="30" alt="image" src="https://github.com/user-attachments/assets/e8c5e492-6226-4117-8b55-9147ed6671af" /> across all joints present.
+---
 
-Aggregate per clip (robust summaries):
-median, 75th percentile (p75), IQR, std, MAD, max, variance, fraction above median, duration =  <img width="168" height="33" alt="image" src="https://github.com/user-attachments/assets/817a6074-78c4-4a96-9d16-3940c1027ce6" />
+## 4) Movement-intensity targets
 
-Base scalar for intensity:
-movement_intensity_raw = median(frame_speed) (robust to outliers).
+- Base scalar per sample: robust **median** of frame‑wise speed (MMASD) or **median** SVM (Engagnition ACC).  
+- Within‑participant normalization: robust z‑score **per participant** (and per dataset) to remove subject scale.  
+- Binary proxy label: `movement_intensity_bin = 1 if z >= 0 else 0` — balanced within each participant.
 
-If optical-flow magnitude is available, the same aggregation is applied to the flow series; results are equivalent in spirit.
+---
 
-2b) Engagnition (ACC)
+## 5) Reproducibility notes
 
-Input: accelerometer axes ax, ay, az (~32 Hz).
+- Use **GroupKFold(groups=participant_id_global)** to avoid subject leakage in any CV.  
+- Perform scaling/fit steps in training with **train-only statistics** (`scaling_mode=train_only` in LODO scripts).  
+- After a successful run, export a lock file:  
 
-Signal Vector Magnitude (SVM): <img width="269" height="50" alt="image" src="https://github.com/user-attachments/assets/3a71b5e6-3c5a-49ac-9476-d0e1d6193b82" />
+---
 
-Aggregate per session (same robust set):
-median, p75, IQR, std, MAD, max, var, fraction above median, duration = <img width="62" height="34" alt="image" src="https://github.com/user-attachments/assets/2d9bfcf1-89dd-45c5-b255-b09eaec8dbeb" />
+## 6) Troubleshooting
 
-Base scalar:
-movement_intensity_raw = median(SVM).
+- Paths with spaces on Windows must be quoted (`"path with spaces"`).  
+- If a script cannot find inputs, verify **relative** paths in metadata columns.  
+- If imports fail, re‑install from `requirements.txt` and ensure Python 3.10 is active.
 
-3) Within-participant robust z-score
-
-To make intensity comparable within the same person (removing per-subject scale):
-For each participant p separately (and within each dataset to avoid cross-site leakage):
-<img width="322" height="80" alt="image" src="https://github.com/user-attachments/assets/1504339c-c35c-4dd9-b623-41e94408cd39" />
-Store as movement_intensity_z.
-
-4) Binary target (proxy outcome)
-
-We define a balanced, participant-relative label:
-
-movement_intensity_bin = 1  if movement_intensity_z >= 0
-                         0  otherwise
-
-Threshold 0 equals the participant median → halves the person’s samples into higher- vs lower-movement intervals.
-
-Rationale: keeps class balance and avoids cross-subject scale bias.
-
-5) Save metadata & freeze
-
-Working master: metadata_master.csv/.xlsx — convenient for inspection.
-
-Frozen, split-ready (used by all experiments):
-
-metadata_ml_ready_splits.xlsx
-
-schema.yaml (column types/descriptions)
-
-splits_manifest.json (canonical CV/test splits)
-
-*_withGlobalID.* (adds participant_id_global for group-aware CV and clean merges)
-
-Each freeze is stored under a versioned folder (e.g., data/frozen/v1_2025-09-13/) and kept immutable.
-
-Practical notes & safeguards
-
-Group awareness: all downstream CV uses participant_id_global (or a safe fallback) to prevent subject leakage across folds.
-
-Missingness: rows with missing label or all-NaN features are excluded; partial NaNs are median-imputed per feature (fit on train only).
-
-Reproducibility: every transformation is deterministic and tied to a specific frozen snapshot and script version; new changes → new version folder.
-
-Extensibility: Engagnition can be enriched with GSR/TMP-derived features; MMASD can include optical-flow features — the preparation logic (robust summaries → z-score → binarization) stays the same.
