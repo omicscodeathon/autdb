@@ -11,7 +11,7 @@ This document summarises our **privacy-first, cross-dataset** pipeline from raw-
 
 **PII handling.** Both datasets are handled without PII: we work with de‑identified IDs and derived time‑series/features only.
 
-> See placement details in [docs/datasets.md](datasets.md).
+> See placement details in docs/datasets.md.
 
 ---
 
