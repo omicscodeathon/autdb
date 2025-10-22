@@ -20,124 +20,41 @@
 
 ---
 
-## ⚡ Five‑Minute Quick Start (Windows + Python 3.10)
-
-```bash
-# 1) Environment
-py -m venv .venv
-.venv\Scripts\activate
-py -m pip install -r requirements.txt
-```
-
-1) **Place data** under `./data` exactly as described in `docs/datasets.md`  
-   - `data/MMASD/…` - skeletons / optical flow / tables  
-   - `data/Engagnition/…` - E4 CSVs (`E4AccData.csv`, `E4GsrData.csv`, `E4TmpData.csv`) + questionnaires/annotations  
-2) **Build per‑dataset basics** (from repo root):
-```bash
-py "Code for preparing tables\build_mmasd_basic.py"
-py "Code for preparing tables\compute_mmasd_features.py"
-py "Code for preparing tables\build_engagnition_basic.py"
-py "Code for preparing tables\compute_eng_features.py"
-```
-3) **Merge** into a unified master table:
-```bash
-py "Code for preparing tables\merge_tables.py"
-```
-4) **Clean + add global IDs & splits**: open and run  
-   `Prepared data with IDglobal/Metadata cleaning.ipynb`.
-5) (Optional) **Feature enrichment**: see `Prepared data with features/`.
-6) **Run baselines**: go to `Baseline/` → pick a folder `Experement - *` → follow its local `README.txt` for exact commands.
-
-> Tip: Every working folder contains its own short **README.txt** with the literal commands to run.
-
----
-
 ## 🗂️ Repository Structure
+autdb/
+├─ docs/
+│  ├─ preparation.md         # end-to-end data/feature preparation
+│  ├─ training.md            # IID/LODO setups, models, metrics, scaling modes
+│  ├─ reproducibility.md     # seeds, frozen snapshots, lock files
+│  ├─ metadata_schema.md     # column definitions (incl. participant_id_global)
+│  └─ datasets.md            # how to place source datasets locally
+├─ data/
+│  ├─ Code for preparing tables/            # build_* and compute_* scripts
+│  ├─ Prepared data with features/          # feature builders & merges
+│  ├─ Prepared data with IDglobal/          # cleaning/schema notebooks, splits manifest
+│  ├─ frozen/
+│  │  └─ v1_2025-09-13/                     # immutable snapshot (tables, schema, splits)
+│  └─ Baseline/
+│     ├─ Experiment - 1 (General Baseline)/ # multi-input baselines (IID + LODO)
+│     ├─ Experiment - 2 (MMASD)/            # MMASD-only tasks
+│     ├─ Experiment - 3 (Engagnition)/      # Engagnition-only tasks (+ enrichment)
+│     └─ Experiment - 4 (LODO)/             # unified LODO intensity pipeline
+├─ scripts/
+│  ├─ requirements.txt
+│  └─ requirements.train.txt                # optional: training-only
+├─ LICENSE
+└─ README.md
 
-```
-docs/
-  AutDB.pptm
-  datasets.md
-  metadata_schema.md
-  preparation.md
-  reproducibility.md
-  training.md
-```
+Installation (Python 3.10)
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
 
-```
-frozen/
-  v1_2025-09-13/
-    README.txt
-    schema.yaml
-    schema_withGlobalID.yaml
-    metadata_ml_ready_splits.xlsx
-    metadata_ml_ready_splits_withGlobalID.xlsx
-    splits_manifest.json
-    splits_manifest_withGlobalID.json
-```
+python -m pip install -U pip
+pip install -r requirements.txt
 
-```
-Code for preparing tables/
-  README.txt
-  build_mmasd_basic.py
-  compute_mmasd_features.py
-  build_engagnition_basic.py
-  compute_eng_features.py
-  merge_tables.py
-  Engagnition basic.xlsx
-  MMASD basic.xlsx
-  metadata_master.csv
-  metadata_master.xlsx
-```
-
-```
-Prepared data with IDglobal/
-  README.txt
-  Metadata cleaning.ipynb
-  metadata_master.xlsx
-  metadata_ml_ready*.xlsx
-  schema.yaml / schema.yaml.ipynb
-  splits_manifest.json
-```
-
-```
-Prepared data with features/
-  README.txt
-  *features*.xlsx
-  *merged*.xlsx
-```
-
-```
-Baseline/
-  Experement - 1 (General Baseline)/
-    README.txt
-    train_mi_baselines.py
-    outputs/
-  Experement - 2 (MMASD)/
-    README.txt
-    mmasd_dual_task.py | train_from_cleaned.py
-    outputs/
-  Experement - 3 (Engagnition)/
-    README.txt
-    train_engagnition.py
-    train_engagnition_enriched.py
-    outputs/
-  Experement - 4 (LODO)/
-    README.txt
-    build_lodo_intensity_table.py
-    train_lodo_intensity_scaled.py
-    outputs_global/
-    outputs_per_dataset/
-    outputs_train_only/
-```
-
-```
-data/                      # you create locally (see docs/datasets.md)
-  MMASD/
-  Engagnition/
-```
-
----
+Key dependencies (see requirements.txt for versions):
+pandas, numpy, scikit-learn, xgboost (optional), matplotlib, tqdm, openpyxl, XlsxWriter, orjson, pyyaml, jupyter.
 
 ## 🔁 End‑to‑End Workflow (6 Steps)
 
