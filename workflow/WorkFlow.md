@@ -1,6 +1,6 @@
 # End-to-End Process
 
-This document summarises our **privacy-first, cross-dataset** pipeline from raw-derived inputs to frozen, reproducible experiments. It is aligned with the repository layout in `autdb/` and complements: [docs/preparation.md](preparation.md), [docs/training.md](training.md), and the frozen snapshot under `data/frozen/`.
+This document summarises our **privacy-first, cross-dataset** pipeline from raw-derived inputs to frozen, reproducible experiments. It is aligned with the repository layout in `autdb/` and complements: preparation.md,training.md, and the frozen snapshot under `data/frozen/`.
 
 ---
 
