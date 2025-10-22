@@ -46,17 +46,19 @@ autdb/
 │  └─ requirements.train.txt                # optional: training-only
 ├─ LICENSE
 └─ README.md
+```
 
 
+## Installation (Python 3.10)
 
-Installation (Python 3.10)
+```bash
 python -m venv .venv
 # Windows:
 .venv\Scripts\activate
 
 python -m pip install -U pip
 pip install -r requirements.txt
-
+```
 Key dependencies (see requirements.txt for versions):
 pandas, numpy, scikit-learn, xgboost (optional), matplotlib, tqdm, openpyxl, XlsxWriter, orjson, pyyaml, jupyter.
 
