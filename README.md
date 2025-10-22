@@ -46,6 +46,7 @@ autdb/
 ├─ LICENSE
 └─ README.md
 
+
 Installation (Python 3.10)
 python -m venv .venv
 # Windows:
