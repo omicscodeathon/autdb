@@ -151,6 +151,8 @@ data/                      # you create locally (see docs/datasets.md)
 5. **Train & evaluate** interpretable models (e.g., Logistic Regression). Save metrics to CSV.  
 6. **Freeze** outputs and schema in `frozen/` to guarantee reproducibility.
 
+![Flowchart (1)](https://github.com/user-attachments/assets/08e82f4a-c25c-4f96-88b8-b1ceade62057)
+
 ---
 
 ## 🧬 Data Schema (Essentials)
