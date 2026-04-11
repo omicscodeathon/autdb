@@ -8,15 +8,38 @@
 
 ---
 
-## 🔎 Overview
+## What AutDB is
 
-- **Goal.** Provide a transparent, reproducible pipeline for training and evaluating portable ML models on derived, **non‑identifiable** features from MMASD and Engagnition.
-- **Key deliverables.**
-  - A **unified metadata table** (one row = MMASD clip or Engagnition session).
-  - A shared proxy target: `movement_intensity_raw → z‑score within participant → movement_intensity_bin (z ≥ 0)`.
-  - Ready‑to‑run **IID** (GroupKFold by `participant_id_global`) and **LODO** (train on one dataset, test on the other) experiments.
-  - Saved **metrics CSVs** (AUROC, Balanced Accuracy, F1) and optional figures.
-- **Privacy notice.** No raw videos are stored here. Only derived features and relative file paths. Obtain original data from the dataset owners (see `docs/datasets.md`).
+AutDB is a privacy-first benchmark toolkit for cross-dataset ASD movement-analysis research.  
+It helps researchers harmonize privacy-preserving derived features from heterogeneous datasets, generate leakage-safe participant-aware splits, run reproducible IID and LODO baselines, and export standardized evaluation outputs.
+
+## Who it is for
+
+AutDB is intended for:
+- researchers working on ASD movement analysis,
+- teams studying model portability across datasets,
+- groups operating under privacy constraints where raw child video cannot be redistributed,
+- developers who want a reproducible baseline and schema contract for benchmarking.
+
+AutDB is **not** a clinical diagnostic tool and should not be used for direct ASD diagnosis.
+
+## What a user does with AutDB
+
+A user:
+1. obtains access to the original source datasets from their owners,
+2. places them locally according to the documented structure,
+3. runs the AutDB pipeline to build unified metadata and fixed splits,
+4. executes baseline experiments under IID and LODO settings,
+5. receives metrics tables, manifests, and reproducible outputs for comparison.
+
+## What AutDB outputs
+
+AutDB produces:
+- unified metadata tables,
+- participant-aware split manifests,
+- reproducible baseline metrics,
+- optional figures,
+- frozen benchmark artifacts for reuse and comparison.
 
 ---
 
@@ -47,7 +70,6 @@ autdb/
 ├─ LICENSE
 └─ README.md
 ```
-
 
 ## Installation (Python 3.10)
 
